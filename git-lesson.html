@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Git Урок: Работа с ветками и инструменты разработки</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+            padding: 40px 0;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .part {
+            background: white;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .part:hover {
+            transform: translateY(-5px);
+        }
+
+        .part-title {
+            color: #5a67d8;
+            font-size: 2rem;
+            margin-bottom: 20px;
+            text-align: center;
+            border-bottom: 3px solid #5a67d8;
+            padding-bottom: 10px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+        }
+
+        .section-title {
+            color: #2d3748;
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            padding-left: 15px;
+            border-left: 4px solid #4299e1;
+        }
+
+        .command-block {
+            background: #1a202c;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            margin: 15px 0;
+            position: relative;
+            overflow-x: auto;
+        }
+
+        .command-block::before {
+            content: '$';
+            color: #68d391;
+            margin-right: 10px;
+            font-weight: bold;
+        }
+
+        .before-after {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .before, .after {
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .before {
+            background: #fed7d7;
+            border: 2px solid #e53e3e;
+        }
+
+        .after {
+            background: #c6f6d5;
+            border: 2px solid #38a169;
+        }
+
+        .before h4, .after h4 {
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+
+        .before h4 {
+            color: #c53030;
+        }
+
+        .after h4 {
+            color: #2f855a;
+        }
+
+        .diagram {
+            margin: 20px 0;
+            padding: 20px;
+            background: #f7fafc;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .tool-card {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin: 20px 0;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .tool-card h4 {
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .tool-features {
+            list-style: none;
+            padding: 0;
+        }
+
+        .tool-features li {
+            padding: 8px 0;
+            padding-left: 25px;
+            position: relative;
+        }
+
+        .tool-features li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #68d391;
+            font-weight: bold;
+        }
+
+        .warning {
+            background: #fff3cd;
+            color: #856404;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #ffc107;
+            margin: 15px 0;
+        }
+
+        .tip {
+            background: #d1ecf1;
+            color: #0c5460;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #17a2b8;
+            margin: 15px 0;
+        }
+
+        .example {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+
+        .example-title {
+            font-weight: bold;
+            color: #495057;
+            margin-bottom: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .before-after {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .part {
+                padding: 20px;
+            }
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 0.8s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header animate-fade-in">
+            <h1>🚀 Git: Управление ветками и инструменты разработки</h1>
+            <p>Интерактивный урок по продвинутым возможностям Git</p>
+        </div>
+
+        <!-- Часть 1: Работа с ветками -->
+        <div class="part animate-fade-in">
+            <h2 class="part-title">Часть 1: Переименование и удаление веток</h2>
+            
+            <div class="section">
+                <h3 class="section-title">🔄 Переименование веток</h3>
+                
+                <div class="before-after">
+                    <div class="before">
+                        <h4>До переименования</h4>
+                        <div class="diagram">
+                            <div class="mermaid">
+                                gitGraph
+                                    commit id: "Initial"
+                                    branch old-feature-name
+                                    checkout old-feature-name
+                                    commit id: "Feature work"
+                                    commit id: "More work"
+                                    checkout main
+                                    commit id: "Main updates"
+                            </div>
+                        </div>
+                    </div>
+                    <div class="after">
+                        <h4>После переименования</h4>
+                        <div class="diagram">
+                            <div class="mermaid">
+                                gitGraph
+                                    commit id: "Initial"
+                                    branch new-feature-name
+                                    checkout new-feature-name
+                                    commit id: "Feature work"
+                                    commit id: "More work"
+                                    checkout main
+                                    commit id: "Main updates"
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="example">
+                    <div class="example-title">📝 Команды для переименования веток:</div>
+                    
+                    <h4>Переименование текущей ветки:</h4>
+                    <div class="command-block">git branch -m new-branch-name</div>
+                    
+                    <h4>Переименование любой ветки:</h4>
+                    <div class="command-block">git branch -m old-branch-name new-branch-name</div>
+                    
+                    <h4>Переименование ветки в удаленном репозитории:</h4>
+                    <div class="command-block">git push origin -u new-branch-name</div>
+                    <div class="command-block">git push origin --delete old-branch-name</div>
+                </div>
+
+                <div class="tip">
+                    <strong>💡 Совет:</strong> Всегда убедитесь, что вы находитесь на правильной ветке перед переименованием. Используйте <code>git branch</code> для проверки.
+                </div>
+            </div>
+
+            <div class="section">
+                <h3 class="section-title">🗑️ Удаление веток</h3>
+                
+                <div class="before-after">
+                    <div class="before">
+                        <h4>До удаления</h4>
+                        <div class="diagram">
+                            <div class="mermaid">
+                                gitGraph
+                                    commit id: "Initial"
+                                    branch feature-1
+                                    checkout feature-1
+                                    commit id: "Feature 1"
+                                    checkout main
+                                    branch feature-2
+                                    checkout feature-2
+                                    commit id: "Feature 2"
+                                    checkout main
+                                    branch old-branch
+                                    checkout old-branch
+                                    commit id: "Old work"
+                                    checkout main
+                                    commit id: "Main work"
+                            </div>
+                        </div>
+                    </div>
+                    <div class="after">
+                        <h4>После удаления</h4>
+                        <div class="diagram">
+                            <div class="mermaid">
+                                gitGraph
+                                    commit id: "Initial"
+                                    branch feature-1
+                                    checkout feature-1
+                                    commit id: "Feature 1"
+                                    checkout main
+                                    branch feature-2
+                                    checkout feature-2
+                                    commit id: "Feature 2"
+                                    checkout main
+                                    commit id: "Main work"
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="example">
+                    <div class="example-title">📝 Команды для удаления веток:</div>
+                    
+                    <h4>Безопасное удаление локальной ветки (только если изменения слиты):</h4>
+                    <div class="command-block">git branch -d branch-name</div>
+                    
+                    <h4>Принудительное удаление локальной ветки:</h4>
+                    <div class="command-block">git branch -D branch-name</div>
+                    
+                    <h4>Удаление удаленной ветки:</h4>
+                    <div class="command-block">git push origin --delete branch-name</div>
+                    
+                    <h4>Очистка устаревших ссылок на удаленные ветки:</h4>
+                    <div class="command-block">git remote prune origin</div>
+                    <div class="command-block">git fetch --prune</div>
+                </div>
+
+                <div class="warning">
+                    <strong>⚠️ Внимание:</strong> Удаление ветки необратимо! Убедитесь, что все важные изменения сохранены и слиты в основную ветку.
+                </div>
+            </div>
+        </div>
+
+        <!-- Часть 2: Инструменты разработки -->
+        <div class="part animate-fade-in">
+            <h2 class="part-title">Часть 2: Инструменты для качества кода</h2>
+            
+            <div class="section">
+                <h3 class="section-title">🐺 Husky - Git Hooks Manager</h3>
+                
+                <div class="tool-card">
+                    <h4>🎯 Что такое Husky?</h4>
+                    <p>Husky позволяет легко управлять Git hooks - скриптами, которые автоматически выполняются при определенных Git событиях.</p>
+                    
+                    <ul class="tool-features">
+                        <li>Автоматическая проверка кода перед коммитом</li>
+                        <li>Запуск тестов перед push</li>
+                        <li>Форматирование кода</li>
+                        <li>Проверка сообщений коммитов</li>
+                    </ul>
+                </div>
+
+                <div class="before-after">
+                    <div class="before">
+                        <h4>Без Husky</h4>
+                        <div class="diagram">
+                            <div class="mermaid">
+                                flowchart TD
+                                    A[Разработчик пишет код] --> B[git add .]
+                                    B --> C[git commit]
+                                    C --> D[git push]
+                                    D --> E[❌ Ошибки обнаружены в CI/CD]
+                                    E --> F[😰 Необходимо исправлять на сервере]
+                            </div>
+                        </div>
+                    </div>
+                    <div class="after">
+                        <h4>С Husky</h4>
+                        <div class="diagram">
+                            <div class="mermaid">
+                                flowchart TD
+                                    A[Разработчик пишет код] --> B[git add .]
+                                    B --> C[git commit]
+                                    C --> D[🔍 Husky: проверка кода]
+                                    D --> E{Проверки пройдены?}
+                                    E -->|Да| F[✅ Коммит создан]
+                                    E -->|Нет| G[❌ Коммит отклонен]
+                                    F --> H[git push]
+                                    G --> I[🔧 Исправить ошибки]
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="example">
+                    <div class="example-title">📝 Установка и настройка Husky:</div>
+                    
+                    <h4>1. Установка:</h4>
+                    <div class="command-block">npm install --save-dev husky</div>
+                    
+                    <h4>2. Инициализация:</h4>
+                    <div class="command-block">npx husky install</div>
+                    
+                    <h4>3. Добавление pre-commit hook:</h4>
+                    <div class="command-block">npx husky add .husky/pre-commit "npm run lint && npm run test"</div>
+                    
+                    <h4>4. Пример .husky/pre-commit файла:</h4>
+                    <div class="command-block">#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+npm run lint
+npm run test</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3 class="section-title">✅ Commitlint - Проверка сообщений коммитов</h3>
+                
+                <div class="tool-card">
+                    <h4>📋 Что такое Commitlint?</h4>
+                    <p>Commitlint проверяет, что сообщения ваших коммитов соответствуют определенным правилам и конвенциям.</p>
+                    
+                    <ul class="tool-features">
+                        <li>Стандартизированные сообщения коммитов</li>
+                        <li>Автоматическая генерация changelog</li>
+                        <li>Улучшенная читаемость истории проекта</li>
+                        <li>Поддержка семантического версионирования</li>
+                    </ul>
+                </div>
+
+                <div class="before-after">
+                    <div class="before">
+                        <h4>Плохие сообщения коммитов</h4>
+                        <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; font-family: monospace;">
+                            <div style="color: #dc3545;">❌ fix bug</div>
+                            <div style="color: #dc3545;">❌ update</div>
+                            <div style="color: #dc3545;">❌ changes</div>
+                            <div style="color: #dc3545;">❌ working on feature</div>
+                            <div style="color: #dc3545;">❌ asdf</div>
+                        </div>
+                    </div>
+                    <div class="after">
+                        <h4>Хорошие сообщения коммитов</h4>
+                        <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; font-family: monospace;">
+                            <div style="color: #28a745;">✅ fix(auth): resolve login timeout issue</div>
+                            <div style="color: #28a745;">✅ feat(ui): add dark mode toggle</div>
+                            <div style="color: #28a745;">✅ docs(api): update authentication examples</div>
+                            <div style="color: #28a745;">✅ refactor(utils): simplify date formatting</div>
+                            <div style="color: #28a745;">✅ test(user): add validation tests</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="example">
+                    <div class="example-title">📝 Установка и настройка Commitlint:</div>
+                    
+                    <h4>1. Установка:</h4>
+                    <div class="command-block">npm install --save-dev @commitlint/config-conventional @commitlint/cli</div>
+                    
+                    <h4>2. Создание конфигурации (.commitlintrc.json):</h4>
+                    <div class="command-block">{
+  "extends": ["@commitlint/config-conventional"],
+  "rules": {
+    "type-enum": [2, "always", [
+      "feat", "fix", "docs", "style", "refactor", 
+      "test", "chore", "perf", "ci", "build"
+    ]]
+  }
+}</div>
+                    
+                    <h4>3. Добавление commit-msg hook:</h4>
+                    <div class="command-block">npx husky add .husky/commit-msg 'npx --no -- commitlint --edit "$1"'</div>
+                </div>
+
+                <div class="tip">
+                    <strong>💡 Формат conventional commits:</strong> 
+                    <code>type(scope): description</code><br>
+                    Где type может быть: feat, fix, docs, style, refactor, test, chore
+                </div>
+            </div>
+
+            <div class="section">
+                <h3 class="section-title">🎨 Commitizen - Интерактивные коммиты</h3>
+                
+                <div class="tool-card">
+                    <h4>🚀 Что такое Commitizen?</h4>
+                    <p>Commitizen предоставляет интерактивный интерфейс для создания стандартизированных сообщений коммитов.</p>
+                    
+                    <ul class="tool-features">
+                        <li>Интерактивный мастер создания коммитов</li>
+                        <li>Автоматическое следование конвенциям</li>
+                        <li>Поддержка различных адаптеров</li>
+                        <li>Интеграция с IDE и командной строкой</li>
+                    </ul>
+                </div>
+
+                <div class="before-after">
+                    <div class="before">
+                        <h4>Обычный процесс коммита</h4>
+                        <div style="background: #1a202c; color: #e2e8f0; padding: 15px; border-radius: 8px; font-family: monospace;">
+                            <div>$ git commit -m "fix something"</div>
+                            <div style="color: #fd7171;">😕 Неинформативное сообщение</div>
+                            <div style="color: #fd7171;">😕 Нет структуры</div>
+                            <div style="color: #fd7171;">😕 Сложно понять изменения</div>
+                        </div>
+                    </div>
+                    <div class="after">
+                        <h4>С Commitizen</h4>
+                        <div style="background: #1a202c; color: #e2e8f0; padding: 15px; border-radius: 8px; font-family: monospace;">
+                            <div>$ git cz</div>
+                            <div style="color: #68d391;">? Select the type of change: <strong>fix</strong></div>
+                            <div style="color: #68d391;">? What is the scope: <strong>auth</strong></div>
+                            <div style="color: #68d391;">? Write a short description: <strong>resolve login timeout</strong></div>
+                            <div style="color: #68d391;">✨ Структурированный коммит готов!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="example">
+                    <div class="example-title">📝 Установка и настройка Commitizen:</div>
+                    
+                    <h4>1. Глобальная установка:</h4>
+                    <div class="command-block">npm install -g commitizen cz-conventional-changelog</div>
+                    
+                    <h4>2. Локальная установка для проекта:</h4>
+                    <div class="command-block">npm install --save-dev commitizen cz-conventional-changelog</div>
+                    
+                    <h4>3. Настройка в package.json:</h4>
+                    <div class="command-block">{
+  "scripts": {
+    "commit": "git-cz"
+  },
+  "config": {
+    "commitizen": {
+      "path": "cz-conventional-changelog"
+    }
+  }
+}</div>
+                    
+                    <h4>4. Использование:</h4>
+                    <div class="command-block">git add .</div>
+                    <div class="command-block">npm run commit</div>
+                    <div style="margin-top: 10px; font-style: italic; color: #666;">или</div>
+                    <div class="command-block">git cz</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3 class="section-title">🔧 Интеграция всех инструментов</h3>
+                
+                <div class="diagram">
+                    <div class="mermaid">
+                        flowchart TD
+                            A[👨‍💻 Разработчик пишет код] --> B[git add .]
+                            B --> C[git cz 🎨]
+                            C --> D[Commitizen: интерактивное создание коммита]
+                            D --> E[🐺 Husky: pre-commit hook]
+                            E --> F[Проверка кода, тесты, форматирование]
+                            F --> G{Проверки пройдены?}
+                            G -->|Нет| H[❌ Остановка процесса]
+                            G -->|Да| I[✅ Создание коммита]
+                            I --> J[🐺 Husky: commit-msg hook]
+                            J --> K[Commitlint: проверка сообщения]
+                            K --> L{Сообщение корректно?}
+                            L -->|Нет| M[❌ Отклонение коммита]
+                            L -->|Да| N[🎉 Коммит успешно создан]
+                            H --> O[🔧 Исправление ошибок]
+                            M --> P[📝 Исправление сообщения]
+                    </div>
+                </div>
+
+                <div class="example">
+                    <div class="example-title">📦 Полная настройка проекта:</div>
+                    
+                    <h4>package.json:</h4>
+                    <div class="command-block">{
+  "scripts": {
+    "prepare": "husky install",
+    "commit": "git-cz",
+    "lint": "eslint .",
+    "test": "jest"
+  },
+  "devDependencies": {
+    "husky": "^8.0.0",
+    "commitizen": "^4.3.0",
+    "cz-conventional-changelog": "^3.3.0",
+    "@commitlint/cli": "^17.0.0",
+    "@commitlint/config-conventional": "^17.0.0"
+  },
+  "config": {
+    "commitizen": {
+      "path": "cz-conventional-changelog"
+    }
+  }
+}</div>
+                    
+                    <h4>Файлы Husky:</h4>
+                    <div class="command-block"># .husky/pre-commit
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+npm run lint
+npm run test</div>
+                    
+                    <div class="command-block"># .husky/commit-msg
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+npx --no -- commitlint --edit "$1"</div>
+                </div>
+
+                <div class="tip">
+                    <strong>🎯 Результат:</strong> Каждый коммит будет проходить полную проверку качества кода, соответствовать стандартам, и иметь информативное сообщение!
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Инициализация Mermaid
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'default',
+            themeVariables: {
+                primaryColor: '#667eea',
+                primaryTextColor: '#fff',
+                primaryBorderColor: '#5a67d8',
+                lineColor: '#4a5568',
+                secondaryColor: '#764ba2',
+                tertiaryColor: '#f7fafc'
+            }
+        });
+
+        // Анимация появления элементов при скролле
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.animation = 'fadeIn 0.8s ease-in forwards';
+                }
+            });
+        }, observerOptions);
+
+        // Применяем анимацию к секциям
+        document.querySelectorAll('.part, .section').forEach(el => {
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>
